@@ -251,7 +251,7 @@ trait InComponent{
   }
 }
 
-trait Data extends ContextUser with NameableByComponent with Assignable with SpinalTagReady with GlobalDataUser with ScalaLocated with OwnableRef with OverridedEqualsHashCode with InComponent{
+trait Data extends ContextUser with NameableByComponent with Assignable with Accessible with SpinalTagReady with GlobalDataUser with ScalaLocated with OwnableRef with OverridedEqualsHashCode with InComponent{
 
   private[core] var dir: IODirection = null
   private[core] def isIo = dir != null

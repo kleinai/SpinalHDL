@@ -197,6 +197,8 @@ abstract class BaseType extends Data with DeclarationStatement with StatementDou
     }
 
     that match {
+      case that : Accessible if that.accessImpl(that, kind).getTypeObject == target.asInstanceOf[Expression].getTypeObject =>
+        globalData.dslScope.head.append(statement(that.compositeAccess(that, kind)))
       case that : Expression if that.getTypeObject == target.asInstanceOf[Expression].getTypeObject =>
         globalData.dslScope.head.append(statement(that))
       case _ => kind match {

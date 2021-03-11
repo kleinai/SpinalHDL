@@ -285,6 +285,23 @@ trait Assignable {
   }
 }
 
+/** Accessible trait */
+trait Accessible {
+  var compositeAccess: Accessible = null
+
+  final def compositeAccess(target: AnyRef, kind: AnyRef): Expression = compositeAccess match {
+    case null => accessImpl(target, kind)
+    case _    => compositeAccess.compositeAccess(target, kind)
+  }
+
+  private[core] def accessImpl(target: AnyRef, kind: AnyRef): Expression = {
+    target match {
+      case e: Expression => e
+      case _             => null
+    }
+  }
+}
+
 
 object OwnableRef {
 
