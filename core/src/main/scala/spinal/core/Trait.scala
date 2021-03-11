@@ -397,7 +397,7 @@ trait Nameable extends OwnableRef with ContextUser{
           val ownerName = ref.getName()
           if(ownerName != "" && name != "") {
             if (refOwner.isInstanceOf[Suffixable])
-              ownerName + "." + name
+              ownerName + "__" + name
             else
               ownerName + "_" + name
           } else

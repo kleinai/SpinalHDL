@@ -1273,6 +1273,10 @@ class ComponentEmitterVhdl(
       s"(${'"'}${"X" * dc.encoding.getWidth(dc.enum)}${'"'})"
   }
 
+  def emitSuffixAccess(e: SuffixAccessExpression): String = {
+    s"${emitExpression(e.suffix.parent.asInstanceOf[Expression])}.${e.suffix.getPartialName()}"
+  }
+
   def accessBoolFixed(e: BitVectorBitAccessFixed): String = {
     s"pkg_extract(${emitExpression(e.source)},${e.bitId})"
   }
@@ -1300,6 +1304,8 @@ class ComponentEmitterVhdl(
 
     case  e: BoolPoison                              => "'X'"
     case  e: EnumPoison                              => emitEnumPoison(e)
+
+    case  e: SuffixAccessExpression                  => emitSuffixAccess(e)
 
     //unsigned
     case  e: Operator.UInt.Add                       => operatorImplAsBinaryOperator("+")(e)

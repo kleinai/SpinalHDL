@@ -1,6 +1,6 @@
 package spinal.core
 
-import spinal.core.internals.{Suffixable, TypeStruct}
+import spinal.core.internals.{SuffixAccessExpression, Suffixable, TypeStruct}
 import spinal.idslplugin.ValCallback
 
 import scala.collection.mutable
@@ -197,8 +197,13 @@ abstract class SpinalStruct(val typeName: String = null) extends BaseType with N
   override def valCallbackRec(ref: Any, name: String): Unit = ref match {
     case ref : Data => {
       elementsCache += name -> ref
+
+      ref.compositeAccess = new Accessible {
+        override private[core] def accessImpl(target: AnyRef, kind: AnyRef) = new SuffixAccessExpression(target.asInstanceOf[BaseType])
+      }
+
       ref.parent = this
-      if(OwnableRef.proposal(ref, this)) ref.setPartialName(name, Nameable.DATAMODEL_WEAK)
+      if(OwnableRef.proposal(ref, this)) ref.setPartialName(name, Nameable.DATAMODEL_STRONG)
     }
     case ref =>
   }

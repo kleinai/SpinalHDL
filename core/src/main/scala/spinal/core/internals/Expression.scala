@@ -99,6 +99,25 @@ trait ExpressionContainer {
   }
 }
 
+class SuffixAccessExpression(var suffix: BaseType) extends Expression with WidthProvider {
+  type T <: BaseType
+
+  override def opName: String = "A.B"
+  override def getTypeObject: Any = suffix.getTypeObject
+
+  override def foreachExpression(func: Expression => Unit): Unit = func(suffix)
+  override def remapExpressions(func: (Expression) => Expression): Unit = suffix = stabilized(func, suffix).asInstanceOf[T]
+
+  override def getWidth: Int = suffix match {
+    case widthProvider: WidthProvider => widthProvider.getWidth
+    case _ => 0
+  }
+
+  def apply() {
+    if (!suffix.isSuffix)
+      LocatedPendingError(s"Cannot access ${suffix} with suffix because parent ${suffix.parent} is not suffixable")
+  }
+}
 
 abstract class AnalogDriver extends Expression {
   type T <: Expression
@@ -1605,31 +1624,6 @@ class SIntRangedAccessFloating extends BitVectorRangedAccessFloating {
   override def getTypeObject  = TypeSInt
   override def opName: String = "SInt(UInt + Int downto UInt)"
   override def bitVectorRangedAccessFixedFactory: BitVectorRangedAccessFixed = new SIntRangedAccessFixed
-}
-
-/**
-  * SuffixExpression
-  */
-class SuffixExpression extends Expression with ScalaLocated {
-  var target: BaseType = null
-
-  override def opName: String = "Prefix.Suffix"
-  override def getTypeObject: Any = TypeStruct
-  override def remapExpressions(func: Expression => Expression): Unit = {}
-  override def foreachExpression(func: Expression => Unit): Unit = {}
-}
-
-object SuffixExpression {
-  def apply(target: Expression): SuffixExpression = {
-    if (!target.isInstanceOf[BaseType])
-      LocatedPendingError(s"INVALID SUFFIX Cannot suffix non-BaseType expression ${target} at")
-
-    val expr = new SuffixExpression
-
-    expr.target = target.asInstanceOf[BaseType]
-
-    expr
-  }
 }
 
 /**
